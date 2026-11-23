@@ -19,7 +19,7 @@ standard library only, no daemon. State is a directory of JSON files guarded by 
 ## 60-second quickstart
 
 ```sh
-pip install .                         # Python >= 3.9, no dependencies (or put bin/ of this checkout on PATH)
+pip install agentlanes-cli            # Python >= 3.9, no dependencies; the command is `agentlanes`
 cd your-project
 agentlanes init --claude-code --agents-md
 agentlanes doctor                     # every line should say ok/info; anything else comes with a fix
