@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentlanes"                      # rename: change here, in [project.urls]
+Homepage = "https://github.com/metastazorg/agentlanes"
+Issues = "https://github.com/metastazorg/agentlanes/issues"
+
+[project.scripts] and NAME in src/agentlanes/__init__.py
+version = "0.1.0"
+description = "Claims, slots, an event log and a job queue for several AI coding agents sharing one machine"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+authors = [{ name = "Metastaz" }]
+dependencies = []
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development",
+]
+
+[project.urls]
+Homepage = "https://github.com/metastazorg/agentlanes"
+Issues = "https://github.com/metastazorg/agentlanes/issues"
+
+[project.scripts]
+agentlanes = "agentlanes.cli:entry"        # rename: left side is the command name
+
+[tool.setuptools.packages.find]
+where = ["src"]

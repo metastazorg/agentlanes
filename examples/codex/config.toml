@@ -1,0 +1,10 @@
+# Codex PreToolUse hook: deny apply_patch edits to files another agent has claimed.
+# Put this in ~/.codex/config.toml (user) or <repo>/.codex/config.toml (loaded only when the project is trusted;
+# Codex also asks you to review a new hook once, see /hooks). Written against the Codex hooks documentation;
+# not yet run against a real Codex session.
+[[hooks.PreToolUse]]
+matcher = "apply_patch|Edit|Write"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "agentlanes hook codex"

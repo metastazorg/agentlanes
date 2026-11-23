@@ -1,0 +1,230 @@
+{
+"source": "./demo.sh",
+"recorded": "2026-11-23 23:03",
+"lines": [
+[
+0.02,
+"== 3 agents, 1 file, 1 build slot; agent-D crashes holding config.yaml"
+],
+[
+0.09,
+"  0s  agent-D  claimed config.yaml ... and crashes (kill -9)"
+],
+[
+0.09,
+"  0s  agent-A  wants to edit app.py"
+],
+[
+0.16,
+"  0s  agent-A  claimed app.py, editing"
+],
+[
+0.4,
+"  0s  agent-B  wants to edit app.py"
+],
+[
+0.46,
+"  0s  agent-B  BLOCKED: PATH HELD by agent-A (agent-A-edit, since 23:03:46): app.py"
+],
+[
+0.7,
+"  0s  agent-C  wants to edit app.py"
+],
+[
+0.76,
+"  1s  agent-C  BLOCKED: PATH HELD by agent-A (agent-A-edit, since 23:03:46): app.py"
+],
+[
+1.3,
+"--- status while they work:"
+],
+[
+1.4,
+"== claims"
+],
+[
+1.4,
+"  agent-A-edit -- agent-A since 23:03:46, 1h59 left: add login route [paths: app.py] [lease pid 1256100]"
+],
+[
+1.4,
+"== slots"
+],
+[
+1.4,
+"  no slots used yet"
+],
+[
+2.23,
+"  2s  agent-A  released app.py"
+],
+[
+2.23,
+"  2s  agent-A  queued for the build slot (1 slot)"
+],
+[
+2.39,
+"  2s  agent-B  claimed app.py, editing"
+],
+[
+2.49,
+"  2s  agent-C  BLOCKED: PATH HELD by agent-B (agent-B-edit, since 23:03:48): app.py"
+],
+[
+4.47,
+"  4s  agent-B  released app.py"
+],
+[
+4.48,
+"  4s  agent-B  queued for the build slot (1 slot)"
+],
+[
+4.63,
+"  4s  agent-C  claimed app.py, editing"
+],
+[
+5.31,
+"  5s  agent-A  build finished"
+],
+[
+6.72,
+"  6s  agent-C  released app.py"
+],
+[
+6.72,
+"  6s  agent-C  queued for the build slot (1 slot)"
+],
+[
+8.57,
+"  8s  agent-B  build finished"
+],
+[
+11.65,
+" 11s  agent-C  build finished"
+],
+[
+11.65,
+" 11s  agent-A  wants config.yaml (agent-D died holding it)"
+],
+[
+11.73,
+" 11s  agent-A  claimed config.yaml: agent-D's lease ended with its process"
+],
+[
+11.79,
+"--- app.py (one edit at a time, nothing lost):"
+],
+[
+11.79,
+"# app"
+],
+[
+11.79,
+"agent-A: add login route"
+],
+[
+11.79,
+"agent-B: fix typo in header"
+],
+[
+11.79,
+"agent-C: rename helper"
+],
+[
+11.79,
+"--- event log:"
+],
+[
+11.85,
+"11-23 23:03:46 claim.reap       agent-D        [D-config] turn on debug pid=1256097"
+],
+[
+11.85,
+"11-23 23:03:46 claim.conflict   agent-B        [agent-B-edit] holder=agent-A holder_topic=agent-A-edit path=app.py"
+],
+[
+11.85,
+"11-23 23:03:47 claim.conflict   agent-C        [agent-C-edit] holder=agent-A holder_topic=agent-A-edit path=app.py"
+],
+[
+11.85,
+"11-23 23:03:48 slot.acquire     agent-A        [build/1] bash -c sleep 3 pid=1256182 wait_s=0.0"
+],
+[
+11.85,
+"11-23 23:03:48 claim.conflict   agent-C        [agent-C-edit] holder=agent-B holder_topic=agent-B-edit path=app.py"
+],
+[
+11.85,
+"11-23 23:03:51 slot.release     agent-A        [build/1] pid=1256182 rc=0 held_s=3.0"
+],
+[
+11.85,
+"11-23 23:03:51 slot.acquire     agent-B        [build/1] bash -c sleep 3 pid=1256232 wait_s=1.0"
+],
+[
+11.85,
+"11-23 23:03:54 slot.release     agent-B        [build/1] pid=1256232 rc=0 held_s=3.0"
+],
+[
+11.85,
+"11-23 23:03:54 slot.acquire     agent-C        [build/1] bash -c sleep 3 pid=1256239 wait_s=1.8"
+],
+[
+11.85,
+"11-23 23:03:57 slot.release     agent-C        [build/1] pid=1256239 rc=0 held_s=3.0"
+],
+[
+11.85,
+"--- summary:"
+],
+[
+11.91,
+"     5  claim.add"
+],
+[
+11.91,
+"     4  claim.done"
+],
+[
+11.91,
+"     3  claim.conflict"
+],
+[
+11.91,
+"     3  slot.acquire"
+],
+[
+11.91,
+"     3  slot.release"
+],
+[
+11.91,
+"     1  claim.reap"
+],
+[
+11.91,
+"by: agent-A 6, agent-C 6, agent-B 5, agent-D 2"
+],
+[
+12.02,
+"--- kernel lane (Landlock): agent-A runs a shell under 'agentlanes run', holding a claim on src/ only"
+],
+[
+12.17,
+"  inside lane:  appended to src/app.py"
+],
+[
+12.18,
+"  outside lane: sed: couldn't open temporary file conf/sedqPH4Yh: Permission denied"
+],
+[
+12.18,
+"  outside lane: cp: cannot create regular file 'conf/stolen': Permission denied"
+],
+[
+12.2,
+"  conf/config.yaml still says: debug: false"
+]
+]
+}

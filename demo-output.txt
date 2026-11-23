@@ -1,0 +1,57 @@
+$ ./demo.sh
+== 3 agents, 1 file, 1 build slot; agent-D crashes holding config.yaml
+  0s  agent-D  claimed config.yaml ... and crashes (kill -9)
+  0s  agent-A  wants to edit app.py
+  0s  agent-A  claimed app.py, editing
+  0s  agent-B  wants to edit app.py
+  0s  agent-B  BLOCKED: PATH HELD by agent-A (agent-A-edit, since 22:33:33): app.py
+  0s  agent-C  wants to edit app.py
+  0s  agent-C  BLOCKED: PATH HELD by agent-A (agent-A-edit, since 22:33:33): app.py
+--- status while they work:
+== claims
+  agent-A-edit -- agent-A since 22:33:33, 1h59 left: add login route [paths: app.py] [lease pid 1226273]
+== slots
+  no slots used yet
+  2s  agent-A  released app.py
+  2s  agent-A  queued for the build slot (1 slot)
+  2s  agent-B  claimed app.py, editing
+  2s  agent-C  BLOCKED: PATH HELD by agent-B (agent-B-edit, since 22:33:35): app.py
+  4s  agent-B  released app.py
+  4s  agent-B  queued for the build slot (1 slot)
+  4s  agent-C  claimed app.py, editing
+  5s  agent-A  build finished
+  6s  agent-C  released app.py
+  6s  agent-C  queued for the build slot (1 slot)
+  8s  agent-B  build finished
+ 11s  agent-C  build finished
+ 11s  agent-A  wants config.yaml (agent-D died holding it)
+ 11s  agent-A  claimed config.yaml: agent-D's lease ended with its process
+--- app.py (one edit at a time, nothing lost):
+# app
+agent-A: add login route
+agent-B: fix typo in header
+agent-C: rename helper
+--- event log:
+11-23 22:33:33 claim.reap       agent-D        [D-config] turn on debug pid=1226270
+11-23 22:33:33 claim.conflict   agent-B        [agent-B-edit] holder=agent-A holder_topic=agent-A-edit path=app.py
+11-23 22:33:33 claim.conflict   agent-C        [agent-C-edit] holder=agent-A holder_topic=agent-A-edit path=app.py
+11-23 22:33:35 slot.acquire     agent-A        [build/1] bash -c sleep 3 pid=1226306 wait_s=0.0
+11-23 22:33:35 claim.conflict   agent-C        [agent-C-edit] holder=agent-B holder_topic=agent-B-edit path=app.py
+11-23 22:33:38 slot.release     agent-A        [build/1] pid=1226306 rc=0 held_s=3.0
+11-23 22:33:38 slot.acquire     agent-B        [build/1] bash -c sleep 3 pid=1226330 wait_s=0.8
+11-23 22:33:41 slot.release     agent-B        [build/1] pid=1226330 rc=0 held_s=3.0
+11-23 22:33:41 slot.acquire     agent-C        [build/1] bash -c sleep 3 pid=1226393 wait_s=1.6
+11-23 22:33:44 slot.release     agent-C        [build/1] pid=1226393 rc=0 held_s=3.0
+--- summary:
+     5  claim.add
+     4  claim.done
+     3  claim.conflict
+     3  slot.acquire
+     3  slot.release
+     1  claim.reap
+by: agent-A 6, agent-C 6, agent-B 5, agent-D 2
+--- kernel lane (Landlock): agent-A runs a shell under 'agentlanes run', holding a claim on src/ only
+  inside lane:  appended to src/app.py
+  outside lane: sed: couldn't open temporary file conf/sedklV4xi: Permission denied
+  outside lane: cp: cannot create regular file 'conf/stolen': Permission denied
+  conf/config.yaml still says: debug: false

@@ -1,0 +1,19 @@
+---
+description: Coordinate with other coding agents on this machine through agentlanes
+alwaysApply: true
+---
+## Working alongside other agents
+
+Other coding agents may be working on this machine at the same time. Coordinate through `agentlanes`:
+
+1. Before editing, run `agentlanes list` to see what others hold.
+2. Claim what you will change:
+   `agentlanes claim <short-topic> --paths <files-or-dirs> --pid self --desc "<one line: what you are doing>"`
+   If it prints `HELD` or `PATH HELD`, do not edit those paths. Pick other work, or wait with
+   `agentlanes events wait --kind claim.done --timeout 600` and try again.
+3. When finished (or when you give up), run `agentlanes release <short-topic>`.
+   If you exit or crash, the claim ends by itself because of `--pid self`.
+4. Run heavy commands (full builds, full test suites, browsers, model runs) through a slot:
+   `agentlanes slot heavy 1 -- <command>`. Never start a second copy of a heavy command in parallel.
+5. Claims expire after 120 minutes; run `agentlanes renew <short-topic>` if you need longer.
+6. To wait for another agent, use `agentlanes events wait --kind <kind>` instead of sleep loops.

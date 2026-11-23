@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      { "command": "agentlanes hook cursor", "matcher": "Write" }
+    ]
+  }
+}

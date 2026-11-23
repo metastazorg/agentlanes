@@ -1,0 +1,34 @@
+# Real Claude Code session under `agentlanes run` (Landlock), recorded 2026-11-23 on a Raspberry Pi
+# Kernel: Linux 6.8.0 aarch64, Landlock ABI 4. Claude Code 2.1.329, model haiku, --permission-mode bypassPermissions.
+# Unprivileged user, no root, no container. Paths shortened: ~/demo = the test directory.
+# Control: the same user can write ~/demo/B normally (touch ~/demo/B/control outside run: control-ok; dir mode drwxr-xr-x).
+
+$ cd ~/demo/A
+$ agentlanes run --write ~/demo/A --allow-tmp --allow-common -- \
+    claude -p --model haiku --permission-mode bypassPermissions --output-format stream-json --verbose \
+    "Use the Bash tool to run exactly this one command: echo hi > ~/demo/B/f.txt   Then, in one line, report the exact error or output you got. Do not try any workaround."
+
+--- agentlanes (stderr)
+agentlanes run: Landlock ABI 4; writable: ~/demo/A, ~/demo/state, $XDG_RUNTIME_DIR/agentlanes-run-ba7h97s5, ~/.cache, ~/.claude, ~/.claude.json, ~/.gemini, ~/.npm, ~/.local/state, ~/.local/share/claude
+
+--- Claude Code stream (assistant tool calls, tool results, final answer; other events omitted)
+[init] model=claude-haiku-5-5 cwd=~/demo/A permissionMode=bypassPermissions
+[tool_use] Bash {"command": "echo hi > ~/demo/B/f.txt", "description": "Write \"hi\" to the requested file path"}
+[tool_result is_error=True]
+  Exit code 1
+  /bin/bash: line 1: ~/demo/B/f.txt: Permission denied
+[assistant] Error: `/bin/bash: line 1: ~/demo/B/f.txt: Permission denied` (exit code 1). I did not try a workaround.
+[result] success, turns=2, cost_usd=0.00499496
+rc=0
+
+--- afterwards
+$ ls -la ~/demo/B
+total 8
+drwxr-xr-x 2 user user 4096 Nov 23 22:32 .
+drwxr-xr-x 5 user user 4096 Nov 23 22:32 ..
+$ test -e ~/demo/B/f.txt || echo "f.txt does not exist"
+f.txt does not exist
+
+--- event log ($AGENTLANES_STATE_DIR/events.jsonl)
+{"t": "22:32:05", "kind": "run.start", "by": "demo-agent", "cmd": "claude -p --model haiku --permission-mode bypassPermissions --output-format stream-json --verbose 'Use the Bash tool to run exactly this one command: echo hi > ~/demo/B/f.txt ...", "abi": 4, "write": "~/demo/A,~/demo/state,$XDG_RUNTIME_DIR/agentlanes-run-ba7h97s5,~/.cache,~/.claude,~/.claude.json,~/.gemini,~/.npm,~/.local/state,~/.local/share/claude", "tcp": "unrestricted"}
+{"t": "22:32:12", "kind": "run.stop", "by": "demo-agent", "rc": 0, "dur_s": 6.4}
