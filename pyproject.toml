@@ -3,11 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentlanes"                      # rename: change here, in [project.urls]
-Homepage = "https://github.com/metastazorg/agentlanes"
-Issues = "https://github.com/metastazorg/agentlanes/issues"
-
-[project.scripts] and NAME in src/agentlanes/__init__.py
+name = "agentlanes"                      # rename: change here, in the scripts table and NAME in src/agentlanes/__init__.py
 version = "0.1.0"
 description = "Claims, slots, an event log and a job queue for several AI coding agents sharing one machine"
 readme = "README.md"

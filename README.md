@@ -1,6 +1,6 @@
 # agentlanes
 
-<p align="center"><img src="docs/demo.svg" width="800" alt="agentlanes demo: three agents share one file and one build slot, then a real Claude Code session is stopped by Landlock"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/metastazorg/agentlanes/main/docs/demo.svg" width="800" alt="agentlanes demo: three agents share one file and one build slot, then a real Claude Code session is stopped by Landlock"></p>
 
 <sub>A recorded run of <code>./demo.sh</code> (real timing), then a replay of a <a href="examples/landlock/real-session.txt">real Claude Code session</a> under <code>agentlanes run</code>. Regenerate with <code>tools/make_demo_svg.py</code>; video: <a href="docs/demo.mp4">docs/demo.mp4</a>.</sub>
 
@@ -42,11 +42,11 @@ agentlanes status                     # agents, claims, slots, jobs, recent even
 ```
 
 In Claude Code the hook refuses an edit to a path another agent has claimed, even if the agent forgot to check
-([a real session](examples/claude-code/real-session.txt)). Run `./demo.sh` to see three agents compete for one file and
+([a real session](https://github.com/metastazorg/agentlanes/blob/main/examples/claude-code/real-session.txt)). Run `./demo.sh` to see three agents compete for one file and
 one build slot (transcript: [demo-output.txt](demo-output.txt)); on Linux with Landlock it ends with a kernel-lane step.
 
 On Linux, start an agent under `agentlanes run` and the kernel itself refuses writes outside its claimed paths, including
-writes made through shell commands that no hook sees ([a real Claude Code session](examples/landlock/real-session.txt)):
+writes made through shell commands that no hook sees ([a real Claude Code session](https://github.com/metastazorg/agentlanes/blob/main/examples/landlock/real-session.txt)):
 
 ```sh
 agentlanes claim login-page --paths src/auth/ --desc "add OAuth button"
@@ -166,8 +166,8 @@ is not reliable.
 | Agent | How agentlanes is enforced | Set up |
 |---|---|---|
 | Claude Code | **Hook** (`PreToolUse` on Edit/Write/MultiEdit/NotebookEdit). Tested with a real session. | `agentlanes init --claude-code` |
-| Codex | **Hook** (`PreToolUse` on `apply_patch`; file paths are read from the patch). Written to the Codex hooks documentation and unit-tested with sample payloads; not yet run in a real Codex session. | [examples/codex/config.toml](examples/codex/config.toml) + `init --agents-md` |
-| Cursor | **Hook, experimental** (`preToolUse` with matcher `Write`). Cursor documents the event and the `permission: allow/deny` answer, but not the field that carries the file path, so the adapter looks for `file_path`, `path` or `target_file`. Not yet run in real Cursor. | [examples/cursor/hooks.json](examples/cursor/hooks.json) + `init --cursor` |
+| Codex | **Hook** (`PreToolUse` on `apply_patch`; file paths are read from the patch). Written to the Codex hooks documentation and unit-tested with sample payloads; not yet run in a real Codex session. | [examples/codex/config.toml](https://github.com/metastazorg/agentlanes/blob/main/examples/codex/config.toml) + `init --agents-md` |
+| Cursor | **Hook, experimental** (`preToolUse` with matcher `Write`). Cursor documents the event and the `permission: allow/deny` answer, but not the field that carries the file path, so the adapter looks for `file_path`, `path` or `target_file`. Not yet run in real Cursor. | [examples/cursor/hooks.json](https://github.com/metastazorg/agentlanes/blob/main/examples/cursor/hooks.json) + `init --cursor` |
 | Aider, other shell agents | **Instruction-only.** No pre-edit hook to attach to. | `init --agents-md`, then e.g. `aider --read AGENTS.md` |
 
 Instruction-only means the agent is told to claim before editing and usually does, but nothing stops it if it does not.
@@ -179,7 +179,7 @@ different agent it answers `permissionDecision: "deny"` with the holder and the 
 Claude sees and can act on. Unclaimed paths and the agent's own claims produce no output, so the normal permission flow
 is unchanged. "Own claim" means the claim was made from the same Claude Code process (or with the same
 `$AGENTLANES_AGENT`). The hook can go in `.claude/settings.json` (project, what `init` writes) or `~/.claude/settings.json`
-(user); see [examples/claude-code/settings.json](examples/claude-code/settings.json).
+(user); see [examples/claude-code/settings.json](https://github.com/metastazorg/agentlanes/blob/main/examples/claude-code/settings.json).
 
 ### Fail-open or fail-closed
 
