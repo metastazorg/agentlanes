@@ -292,7 +292,8 @@ the tree. It does not share or divide what is left over: ports, a local database
 memory, a test phone, and the human who is editing in the main tree at the same time. Two agents in two worktrees can
 still both start a full build on an 8 GB machine, both bind port 3000, or both run migrations against the same dev
 database. And at some point the work has to be merged back, which is where claims on paths help. agentlanes is the
-coordination layer that sits next to worktrees, not a replacement for them.
+coordination layer that sits next to worktrees, not a replacement for them. `agentlanes lane new NAME` gives you both
+in one step: a worktree on its own branch, claimed, inside the project's shared state.
 
 **Do I need a daemon or a server?** No. Every command reads and writes JSON files under a lock and exits.
 
