@@ -299,6 +299,26 @@ def _hook_runs(command):
     return True, ''
 
 
+def _mcp_answers(entry):
+    """Start a registered MCP server entry and ask it `initialize`. Returns (ok, why)."""
+    argv = [entry.get('command', '')] + list(entry.get('args') or [])
+    if not shutil.which(argv[0]):
+        return False, '%s not found' % argv[0]
+    req = json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'initialize',
+                      'params': {'protocolVersion': '2025-06-18', 'capabilities': {},
+                                 'clientInfo': {'name': 'doctor', 'version': __version__}}}) + '\n'
+    try:
+        r = subprocess.run(argv, input=req, capture_output=True, text=True, timeout=10,
+                           env=dict(os.environ, **(entry.get('env') or {})))
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return False, str(e)
+    try:
+        rep = json.loads(r.stdout.splitlines()[0])
+        return rep['result']['serverInfo']['name'] == NAME, ''
+    except (ValueError, IndexError, KeyError, TypeError):
+        return False, (r.stderr.strip().splitlines() or ['no answer'])[-1]
+
+
 def doctor(out=print):
     """Print one line per check. Exit 1 if any check FAILs (warnings do not fail)."""
     results = []
@@ -393,6 +413,22 @@ def doctor(out=print):
         else:
             rep('FAIL', 'Claude Code hook in %s does not run: %s' % (p, why),
                 'make sure `%s` is on PATH for Claude Code, or rerun `%s init --claude-code`' % (NAME, NAME))
+    # MCP (project scope)
+    mp = os.path.join(root, '.mcp.json')
+    entry = None
+    try:
+        with open(mp, encoding='utf-8') as fh:
+            entry = (json.load(fh).get('mcpServers') or {}).get(NAME)
+    except (OSError, ValueError, AttributeError):
+        pass
+    if entry is None:
+        rep('info', 'no %s MCP server in %s (`%s init --mcp`, or the Claude Code plugin)' % (NAME, mp, NAME))
+    else:
+        ok, why = _mcp_answers(entry if isinstance(entry, dict) else {})
+        if ok:
+            rep('ok', 'MCP server in %s answers initialize' % mp)
+        else:
+            rep('FAIL', 'MCP server in %s does not answer: %s' % (mp, why), 'rerun `%s init --mcp`' % NAME)
     from .hook import strict
     rep('info', 'strict mode in this shell (%s_STRICT): %s' % (ENV, 'on' if strict() else 'off, hooks fail open'))
     bad = results.count('FAIL')

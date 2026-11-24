@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- `agentlanes doctor` starts the project MCP server and checks it answers `initialize`.
 - `agentlanes init --mcp`: registers the MCP server in the project's `.mcp.json` (merged with other servers, old file backed up, idempotent), so everyone who clones the repo gets the tools.
 
 ## 0.3.0 (2026-11-24)

@@ -161,10 +161,10 @@ class DoctorTest(InitBase):
                               timeout=120)
 
     def test_healthy_project(self):
-        self.init('--claude-code')
+        self.init('--claude-code', '--mcp')
         r = self.doctor()
         self.assertEqual(r.returncode, 0, r.stdout)
-        for s in ('on PATH', 'state directory is writable', 'flock excludes a second process',
+        for s in ('MCP server in', 'answers initialize', 'on PATH', 'state directory is writable', 'flock excludes a second process',
                   'Claude Code hook in', 'all checks passed'):
             self.assertIn(s, r.stdout)
 
