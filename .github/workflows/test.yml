@@ -29,14 +29,15 @@ jobs:
       - name: Demo
         run: bash demo.sh
   macos:
-    # One macOS job at a time: with two in parallel the hosted pool twice left one unassigned
-    # for 15 minutes ("The job was not acquired by Runner") and the run was cancelled.
+    # The second macos-latest job of a run was left unassigned for 15 minutes three times
+    # ("The job was not acquired by Runner"), even one at a time; spread over two pinned images instead.
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
-        python: ["3.10", "3.12"]
-    runs-on: macos-latest
+        include:
+          - {os: macos-14, python: "3.10"}
+          - {os: macos-15, python: "3.12"}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
