@@ -28,26 +28,3 @@ jobs:
         run: agentlanes doctor || true
       - name: Demo
         run: bash demo.sh
-  macos:
-    # One macOS job: on this account a second macOS job in the same run was never given a runner
-    # (four runs, cancelled after 15 min, "not acquired by Runner"), in parallel, serial or on macos-14.
-    # Python 3.9-3.12 are covered on Linux.
-    strategy:
-      matrix:
-        include:
-          - {os: macos-15, python: "3.12"}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Install
-        run: pip install .
-      - name: Unit tests
-        run: python -m unittest discover -s tests -v
-      - name: Doctor
-        run: agentlanes doctor || true
-      - name: Demo
-        run: bash demo.sh
