@@ -24,6 +24,7 @@ USAGE = """{n} {v} -- coordination for several coding agents on one machine
                                         set this project up (idempotent; merges, never overwrites)
   {n} run [--claim NAME | --write PATH]... [--allow-tmp] [--allow-common] [--no-net] [--allow-port N] -- CMD...
                                         Linux: start CMD with writes confined to its lanes by the kernel (Landlock)
+  {n} lane new NAME [--base REF] | list | done NAME   one git worktree + branch per agent, claimed
   {n} mcp                               MCP server on stdio (claude mcp add agentlanes -- agentlanes mcp)
   {n} doctor                            check PATH, state dir, flock, hooks, Landlock; prints fixes
   {n} hook claude-code|codex|cursor     PreToolUse hook for that agent (see examples/)
@@ -290,6 +291,29 @@ def main(argv=None):
         return 0
     if argv[0] == 'slot':
         return slot_cmd(argv[1:])
+    if argv[0] == 'lane':
+        from . import lanes
+        a = argparse.ArgumentParser(prog='%s lane' % NAME, description='One git worktree per agent, covered by a claim.')
+        ls = a.add_subparsers(dest='act', required=True)
+        n = ls.add_parser('new', help='create .agentlanes/lanes/NAME on branch lane/NAME and claim it')
+        n.add_argument('name')
+        n.add_argument('--base', help='start the branch from this ref (default: HEAD)')
+        n.add_argument('--desc', default='')
+        n.add_argument('--pid', help="'self' or a pid: the claim ends with that process")
+        n.add_argument('--ttl', type=int, default=24 * 60, help='claim minutes (default 1440)')
+        n.add_argument('--by')
+        l = ls.add_parser('list')
+        l.add_argument('--json', action='store_true')
+        d = ls.add_parser('done', help='remove the worktree, keep the branch, release the claim')
+        d.add_argument('name')
+        d.add_argument('--force', action='store_true')
+        d.add_argument('--by')
+        o = a.parse_args(argv[1:])
+        if o.act == 'new':
+            return lanes.new(o.name, _by(o), o.base, o.desc, o.pid, o.ttl)
+        if o.act == 'list':
+            return lanes.cmd_list(o.json)
+        return lanes.done(o.name, _by(o), o.force)
     if argv[0] == 'mcp':
         from . import mcp
         return mcp.serve()

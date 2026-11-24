@@ -41,6 +41,10 @@ TOOLS = [
              note=_str('result (done) or reason (drop)')), required=['action'])),
     ('events', 'Recent coordination events (claims, conflicts, slots, jobs, edits), newest last.',
      _S(n={'type': 'integer', 'description': 'how many, default 30'}, kind=_str('only this kind, e.g. claim.conflict'))),
+    ('lane', 'Your own git worktree on branch lane/NAME, claimed for you: other agents cannot edit it. '
+             'action=new returns its path (work there), list shows all lanes, done removes it and keeps the branch.',
+     dict(_S(action={'type': 'string', 'enum': ['new', 'list', 'done']}, name=_str('lane name, e.g. "auth"'),
+             base=_str('start from this ref (new)'), desc=_str('what you will do (new)')), required=['action'])),
     ('blame', 'Which agents edited a path (from hook events), newest last.',
      dict(_S(path=_str('file or directory')), required=['path'])),
 ]
@@ -77,6 +81,15 @@ def _argv(name, a):
     if name == 'events':
         v = ['events', 'tail', '-n', str(int(a.get('n') or 30))]
         return v + (['--kind', a['kind']] if a.get('kind') else [])
+    if name == 'lane':
+        act = a['action']
+        if act == 'list':
+            return ['lane', 'list']
+        v = ['lane', act, a['name']]
+        if act == 'new':
+            v += ['--pid', _lease_pid()] + (['--base', a['base']] if a.get('base') else []) + \
+                 (['--desc', a['desc']] if a.get('desc') else [])
+        return v
     if name == 'blame':
         return ['blame', a['path']]
     if name == 'jobs':

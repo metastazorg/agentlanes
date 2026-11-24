@@ -81,6 +81,19 @@ under (found by walking up the process tree to a known agent executable: `claude
 
 Who you are (`--by`) defaults to `$AGENTLANES_AGENT`, else `<agent>-<pid>` of the enclosing agent, else `$USER`.
 
+### Lanes: one worktree per agent
+
+```sh
+agentlanes lane new auth --desc "OAuth button"   # .agentlanes/lanes/auth on branch lane/auth, claimed for you
+cd .agentlanes/lanes/auth && claude                # this agent works here; others are refused by the hook
+agentlanes lane list                              # name, branch, holder, unsaved changes
+agentlanes lane done auth                         # removes the worktree (refuses if work is unsaved), keeps the branch
+```
+
+Two agents in two lanes never share working files, so neither can overwrite the other; merging the branches is the
+normal git review step. The lane sits inside the project's `.agentlanes/` (ignored by git), so agents in a lane still
+share the project's claims, slots, jobs and events. Also available as the MCP tool `lane`.
+
 ### Slots
 
 `agentlanes slot NAME N [--wait SEC] [--mem-free MB] [--max-mem MB] -- COMMAND...`
@@ -185,7 +198,7 @@ claude mcp add agentlanes -- agentlanes mcp
 ```
 
 Tools: `claim` (topic, paths, desc, ttl), `release`, `who`, `list_claims`, `status`, `jobs` (list/add/take/done/drop),
-`events`, `blame`. They run the same code as the CLI. A claim made through MCP lives as long as the agent that made it:
+`lane` (new/list/done), `events`, `blame`. They run the same code as the CLI. A claim made through MCP lives as long as the agent that made it:
 when the agent exits, its claims are released. `HELD by ...` comes back as a normal answer, not a tool error, so the
 agent reads it and picks other work. Status: protocol and tools covered by tests (`tests/test_mcp.py`); the plugin
 manifest passes `claude plugin validate`; a recorded real-session transcript will follow.

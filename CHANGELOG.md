@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- `agentlanes lane new|list|done`: one git worktree per agent on branch `lane/NAME`, claimed so other agents are kept out; `done` refuses to drop unsaved work and keeps the branch. MCP tool `lane`.
+
 ## 0.2.0 (2026-11-24)
 - `agentlanes mcp`: MCP server on stdio (standard library only). Tools: claim, release, who, list_claims, status, jobs, events, blame.
 - Claude Code plugin (`plugin/`) and marketplace (`.claude-plugin/marketplace.json`): MCP tools + edit hook + skill.
