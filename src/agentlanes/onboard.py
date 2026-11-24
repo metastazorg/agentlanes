@@ -123,6 +123,39 @@ def wire_claude_code(root, strict=False, out=print, command=None):
     return 0
 
 
+def wire_mcp(root, out=print, command=None):
+    """Register our MCP server in ROOT/.mcp.json (Claude Code project scope; Cursor reads the same shape from
+    .cursor/mcp.json). Merges, never drops other servers; backs the old file up. Returns exit code."""
+    p = os.path.join(root, '.mcp.json')
+    argv = shlex.split(command or self_command()) + ['mcp']
+    want = {'type': 'stdio', 'command': argv[0], 'args': argv[1:]}
+    cfg, original = {}, None
+    if os.path.exists(p):
+        with open(p, encoding='utf-8') as fh:
+            original = fh.read()
+        try:
+            cfg = json.loads(original) if original.strip() else {}
+        except ValueError as e:
+            out('error: %s is not valid JSON (%s); left untouched.' % (p, e))
+            return 1
+        if not isinstance(cfg, dict) or not isinstance(cfg.get('mcpServers', {}), dict):
+            out('error: %s has an unexpected shape; left untouched.' % p)
+            return 1
+    servers = cfg.setdefault('mcpServers', {})
+    if servers.get(NAME) == want:
+        out('ok    MCP server already in %s' % p)
+        return 0
+    what = 'update' if NAME in servers else 'added '
+    servers[NAME] = want
+    if original is not None:
+        bak = '%s.%s-backup-%s' % (p, NAME, time.strftime('%Y%m%d-%H%M%S'))
+        _write(bak, original)
+        out('      backup of the previous file: %s' % bak)
+    _write(p, json.dumps(cfg, indent=2, ensure_ascii=False) + '\n')
+    out('%s MCP server in %s (Claude Code asks once to trust project servers)' % (what, p))
+    return 0
+
+
 def append_snippet(p, body=SNIPPET, out=print):
     """Append the agent instructions to P between markers, once."""
     old = ''
@@ -141,7 +174,8 @@ def append_snippet(p, body=SNIPPET, out=print):
     return 0
 
 
-def init(root=None, claude_code=False, agents_md=False, claude_md=False, cursor=False, strict=False, out=print):
+def init(root=None, claude_code=False, agents_md=False, claude_md=False, cursor=False, strict=False, out=print,
+         mcp=False):
     root = os.path.abspath(root or os.getcwd())
     d = os.path.join(root, PROJECT_MARKER)
     os.makedirs(d, exist_ok=True)
@@ -152,6 +186,8 @@ def init(root=None, claude_code=False, agents_md=False, claude_md=False, cursor=
     rc = 0
     if claude_code:
         rc |= wire_claude_code(root, strict, out)
+    if mcp:
+        rc |= wire_mcp(root, out)
     if agents_md:
         rc |= append_snippet(os.path.join(root, 'AGENTS.md'), out=out)
     if claude_md:
@@ -164,8 +200,8 @@ def init(root=None, claude_code=False, agents_md=False, claude_md=False, cursor=
             os.makedirs(os.path.dirname(p), exist_ok=True)
             _write(p, CURSOR_RULE)
             out('added Cursor rule %s' % p)
-    if not (claude_code or agents_md or claude_md or cursor):
-        out('next: `%s init --claude-code --agents-md` wires the Claude Code hook and agent instructions' % NAME)
+    if not (claude_code or agents_md or claude_md or cursor or mcp):
+        out('next: `%s init --claude-code --mcp --agents-md` wires the Claude Code hook, MCP tools and agent instructions' % NAME)
     if not shutil.which(NAME):
         out('warn  `%s` is not on PATH; agents and hooks need it there (pip install .)' % NAME)
     return rc

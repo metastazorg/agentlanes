@@ -201,6 +201,8 @@ pip install agentlanes-cli
 /plugin install agentlanes@metastaz
 # or only the MCP server, for any MCP client (Claude Code, Cursor, Codex, ...)
 claude mcp add agentlanes -- agentlanes mcp
+# or for the whole team: commit it in the project's .mcp.json (merged, other servers kept)
+agentlanes init --mcp
 ```
 
 Tools: `claim` (topic, paths, desc, ttl), `release`, `who`, `list_claims`, `status`, `jobs` (list/add/take/done/drop),

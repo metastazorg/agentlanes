@@ -20,7 +20,7 @@ USAGE = """{n} {v} -- coordination for several coding agents on one machine
   {n} jobs add TITLE [--prio N] | list [--all] | take [ID] | done ID [--result T] | drop ID [--why T]
   {n} agents [--all] [--json]           running coding-agent processes
   {n} status                            one screen: agents, claims, slots, jobs, recent events
-  {n} init [--claude-code [--strict]] [--agents-md] [--claude-md] [--cursor]
+  {n} init [--claude-code [--strict]] [--mcp] [--agents-md] [--claude-md] [--cursor]
                                         set this project up (idempotent; merges, never overwrites)
   {n} run [--claim NAME | --write PATH]... [--allow-tmp] [--allow-common] [--no-net] [--allow-port N] -- CMD...
                                         Linux: start CMD with writes confined to its lanes by the kernel (Landlock)
@@ -332,11 +332,12 @@ def main(argv=None):
         a = argparse.ArgumentParser(prog='%s init' % NAME, description='Set up the current directory (idempotent).')
         a.add_argument('--claude-code', action='store_true', help='merge the PreToolUse hook into .claude/settings.json')
         a.add_argument('--strict', action='store_true', help='hook denies edits when %s is missing or broken' % NAME)
+        a.add_argument('--mcp', action='store_true', help='register the MCP server in .mcp.json (project scope)')
         a.add_argument('--agents-md', action='store_true', help='append agent instructions to AGENTS.md')
         a.add_argument('--claude-md', action='store_true', help='append agent instructions to CLAUDE.md')
         a.add_argument('--cursor', action='store_true', help='write .cursor/rules/%s.mdc' % NAME)
         o = a.parse_args(argv[1:])
-        return onboard.init(None, o.claude_code, o.agents_md, o.claude_md, o.cursor, o.strict)
+        return onboard.init(None, o.claude_code, o.agents_md, o.claude_md, o.cursor, o.strict, mcp=o.mcp)
     if argv[0] == 'doctor':
         return onboard.doctor()
     if argv[0] == 'events':

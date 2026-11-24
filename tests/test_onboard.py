@@ -56,6 +56,20 @@ class InitTest(InitBase):
         self.assertEqual(self.read('AGENTS.md').count('agentlanes:begin'), 1)
         self.assertEqual(self.backups(), [])          # nothing pre-existed, nothing changed: no backup
 
+    def test_mcp_json_merged_and_idempotent(self):
+        with open(os.path.join(self.proj, '.mcp.json'), 'w') as fh:
+            json.dump({'mcpServers': {'other': {'command': 'x'}}}, fh)
+        r = self.init('--mcp')
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        m = json.loads(self.read('.mcp.json'))['mcpServers']
+        self.assertEqual(m['other'], {'command': 'x'})
+        self.assertEqual(m['agentlanes']['args'][-1], 'mcp')
+        self.assertEqual(m['agentlanes']['type'], 'stdio')
+        before = self.read('.mcp.json')
+        self.assertEqual(self.init('--mcp').returncode, 0)
+        self.assertEqual(self.read('.mcp.json'), before)
+        self.assertEqual(len([f for f in os.listdir(self.proj) if '.mcp.json.' in f]), 1)   # one backup, first run
+
     def test_state_dir_marker_is_used(self):
         self.init()
         sub = os.path.join(self.proj, 'src', 'deep')
