@@ -164,6 +164,25 @@ First match wins: `--state-dir DIR`, `$AGENTLANES_STATE_DIR`, the nearest `.agen
 All agents that should see each other must use the same directory. Do not put it on a network filesystem: `flock` there
 is not reliable.
 
+## Claude Code plugin and MCP server
+
+The CLI also speaks MCP, so agents can claim, check and release as native tools instead of shell commands.
+
+```sh
+pip install agentlanes-cli
+# Claude Code: plugin = MCP tools + edit hook + a short skill telling the agent when to claim
+/plugin marketplace add metastazorg/agentlanes
+/plugin install agentlanes@metastaz
+# or only the MCP server, for any MCP client (Claude Code, Cursor, Codex, ...)
+claude mcp add agentlanes -- agentlanes mcp
+```
+
+Tools: `claim` (topic, paths, desc, ttl), `release`, `who`, `list_claims`, `status`, `jobs` (list/add/take/done/drop),
+`events`, `blame`. They run the same code as the CLI. A claim made through MCP lives as long as the agent that made it:
+when the agent exits, its claims are released. `HELD by ...` comes back as a normal answer, not a tool error, so the
+agent reads it and picks other work. Status: protocol and tools covered by tests (`tests/test_mcp.py`); the plugin
+manifest passes `claude plugin validate`; a recorded real-session transcript will follow.
+
 ## Hooks and instructions per agent
 
 | Agent | How agentlanes is enforced | Set up |

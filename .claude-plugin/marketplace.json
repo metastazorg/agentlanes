@@ -1,0 +1,17 @@
+{
+  "name": "metastaz",
+  "owner": {
+    "name": "Metastaz",
+    "url": "https://metastaz.org"
+  },
+  "metadata": {
+    "description": "Metastaz tools for running several AI coding agents on one machine."
+  },
+  "plugins": [
+    {
+      "name": "agentlanes",
+      "source": "./plugin",
+      "description": "Several coding agents on one machine without collisions: claims as MCP tools, an edit hook, a job queue."
+    }
+  ]
+}

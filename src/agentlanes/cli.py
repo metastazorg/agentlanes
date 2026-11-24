@@ -24,6 +24,7 @@ USAGE = """{n} {v} -- coordination for several coding agents on one machine
                                         set this project up (idempotent; merges, never overwrites)
   {n} run [--claim NAME | --write PATH]... [--allow-tmp] [--allow-common] [--no-net] [--allow-port N] -- CMD...
                                         Linux: start CMD with writes confined to its lanes by the kernel (Landlock)
+  {n} mcp                               MCP server on stdio (claude mcp add agentlanes -- agentlanes mcp)
   {n} doctor                            check PATH, state dir, flock, hooks, Landlock; prints fixes
   {n} hook claude-code|codex|cursor     PreToolUse hook for that agent (see examples/)
 
@@ -289,6 +290,9 @@ def main(argv=None):
         return 0
     if argv[0] == 'slot':
         return slot_cmd(argv[1:])
+    if argv[0] == 'mcp':
+        from . import mcp
+        return mcp.serve()
     if argv[0] == 'run':
         from . import run
         return run.main(argv[1:])
