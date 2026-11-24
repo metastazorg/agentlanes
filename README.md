@@ -4,6 +4,8 @@
 
 <sub>A recorded run of <code>./demo.sh</code> (real timing), then a replay of a <a href="examples/landlock/real-session.txt">real Claude Code session</a> under <code>agentlanes run</code>. Regenerate with <code>tools/make_demo_svg.py</code>; video: <a href="docs/demo.mp4">docs/demo.mp4</a>.</sub>
 
+[![test](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml/badge.svg)](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml)
+
 Coordination for several AI coding agents (Claude Code, Codex, Cursor, Aider, ...) working on one Linux or macOS machine.
 
 ## The problem
@@ -229,18 +231,12 @@ and without a systemd user session for the memory cap. The Claude Code hook and 
 real Claude Code session. Landlock ABI 5 and 6 (device ioctl, `--isolate`) are unit-tested only: no such kernel was
 available. x86_64 uses the same Landlock syscall numbers but was not run.
 
-**macOS (written, not run on a Mac).** No Mac was available. What we did instead:
-
-- Every Linux-only assumption has a portable path: process liveness, start time (pid-reuse check) and parent walk use
-  `ps -o stat= / lstart= / ppid= -o args=` with `LC_ALL=C`; the process table uses one `-o field=` per column (the form
-  BSD `ps` and procps both accept); working directories use `lsof -d cwd`; free memory uses `vm_stat`; the memory cap
-  uses the RSS watchdog instead of systemd; `demo.sh` works without `$BASHPID` (macOS ships bash 3.2).
-- The `ps` paths run for real on Linux in the test suite (`AGENTLANES_NO_PROC=1` turns `/proc` off): leases, reaping,
-  pid-reuse detection and `--pid self` discovery all pass that way.
-- The macOS-only parsing (BSD `ps` lines, `vm_stat`, `lsof`, `sys.platform == 'darwin'`) is tested with canned output.
-- **Untested on macOS:** that real macOS `ps`, `vm_stat` and `lsof` print exactly what the canned samples assume; `flock`
-  on APFS under load; the RSS watchdog's kill timing; `demo.sh` under bash 3.2; Claude Code process names on macOS.
-  If you run it on a Mac, `agentlanes doctor` and `python3 -m unittest discover -s tests` are the quickest report.
+**macOS (CI on GitHub's macOS runners, Python 3.10 and 3.12).** Every push runs the full unit suite, `agentlanes doctor`
+and `demo.sh` on macOS: the suite passes (the Landlock tests skip, as they should), and the demo blocks all three
+colliding edits and reclaims the crashed agent's lease. The macOS code paths use `ps -o stat= / lstart= / ppid=` with
+`LC_ALL=C`, `lsof -d cwd`, `vm_stat`, and an RSS watchdog instead of systemd; `demo.sh` runs under macOS's bash 3.2.
+**Not yet tested on macOS:** a real Claude Code session with the hook, `flock` on APFS under heavy load, and the RSS
+watchdog's kill timing. Reports from Mac users are welcome (`agentlanes doctor` output is the quickest).
 
 ## FAQ
 
