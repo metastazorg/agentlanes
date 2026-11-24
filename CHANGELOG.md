@@ -1,0 +1,13 @@
+# Changelog
+
+## 0.1.1 (2026-11-24)
+- CI on every push: unit tests, `agentlanes doctor` and `demo.sh` on Linux (Python 3.9–3.12) and macOS (3.10, 3.12).
+- macOS: first real runs; a platform-dependent test fixed.
+- README: test badge, macOS status, absolute links so they also work on PyPI.
+- Packaging: the PyPI name is `agentlanes-cli` (`agentlanes` was too close to an existing project); command and import stay `agentlanes`.
+
+## 0.1.0 (2026-11-23)
+- First release: claims with path leases (released when the holder process dies), N-slot job queues with memory caps,
+  an append-only event log, a job queue, `status`, `init`, `doctor`.
+- Hooks: Claude Code (tested in a real session), Codex, Cursor (experimental).
+- `agentlanes run`: kernel-enforced write lanes on Linux via Landlock (tested in a real Claude Code session).

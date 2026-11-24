@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/metastazorg/agentlanes/main/docs/demo.svg" width="800" alt="agentlanes demo: three agents share one file and one build slot, then a real Claude Code session is stopped by Landlock"></p>
 
-<sub>A recorded run of <code>./demo.sh</code> (real timing), then a replay of a <a href="examples/landlock/real-session.txt">real Claude Code session</a> under <code>agentlanes run</code>. Regenerate with <code>tools/make_demo_svg.py</code>; video: <a href="docs/demo.mp4">docs/demo.mp4</a>.</sub>
+<sub>A recorded run of <code>./demo.sh</code> (real timing), then a replay of a <a href="https://github.com/metastazorg/agentlanes/blob/main/examples/landlock/real-session.txt">real Claude Code session</a> under <code>agentlanes run</code>. Regenerate with <code>tools/make_demo_svg.py</code>; video: <a href="https://github.com/metastazorg/agentlanes/blob/main/docs/demo.mp4">docs/demo.mp4</a>.</sub>
 
 [![test](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml/badge.svg)](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml)
 
