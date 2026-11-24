@@ -198,6 +198,21 @@ def agents_cmd(o, out=print):
     return 0
 
 
+def blame_cmd(o):
+    p = os.path.realpath(os.path.expanduser(o.path)).rstrip('/') or '/'
+    rows = [e for e in core.read_events(since=time.time() - o.days * 86400)
+            if e.get('kind') in ('edit', 'claim.blocked') and e.get('path')
+            and (e['path'] == p or e['path'].startswith(p + '/'))]
+    if not rows:
+        print('no recorded edits under %s in the last %g days (edits are recorded by the editor hook)' % (p, o.days))
+        return 1
+    for e in rows:
+        what = 'edit   ' if e['kind'] == 'edit' else 'BLOCKED'
+        print('%s  %s  %-14s %-10s %s' % (time.strftime('%m-%d %H:%M:%S', time.localtime(e.get('t', 0))), what,
+                                          e.get('by') or '?', e.get('tool') or '', e['path']))
+    return 0
+
+
 def status_cmd(o):
     every = getattr(o, 'watch', None)
     if not every:
@@ -303,6 +318,9 @@ def main(argv=None):
     a = sub.add_parser('agents')
     a.add_argument('--all', action='store_true')
     a.add_argument('--json', action='store_true')
+    a = sub.add_parser('blame', help='which agents edited PATH (from hook events), newest last')
+    a.add_argument('path')
+    a.add_argument('--days', type=float, default=30)
     a = sub.add_parser('status')
     a.add_argument('--watch', nargs='?', type=float, const=2.0, default=None, metavar='SEC',
                    help='redraw every SEC seconds (default 2) until Ctrl-C')
@@ -328,6 +346,8 @@ def main(argv=None):
         return agents_cmd(o)
     if c == 'status':
         return status_cmd(o)
+    if c == 'blame':
+        return blame_cmd(o)
     ap.print_usage()
     return 2
 

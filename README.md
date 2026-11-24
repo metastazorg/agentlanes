@@ -110,6 +110,7 @@ returns to the queue (`job.requeue`).
 
 ### Status, agents, notifications
 
+- `agentlanes blame PATH`: which agents edited (or were refused) under PATH, from the editor hook's records.
 - `agentlanes status [--watch [SEC]]`: running agents, claims, slots, jobs, last events and available memory; `--watch` redraws it every SEC seconds (default 2) like `top`.
 - `agentlanes agents [--all] [--json]`: coding-agent processes with memory (process tree RSS), age and the claims they hold.
 - Notifications: set `AGENTLANES_NOTIFY_CMD` (or `--notify-cmd`, or `"notify_cmd"` in `<state>/config.json`) to any shell

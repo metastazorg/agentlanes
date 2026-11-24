@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- `agentlanes blame PATH`: the editor hook now records allowed edits (`edit` events) next to refusals; `blame` lists who edited what.
 - Example: two real Claude Code agents coordinating on one file (`examples/two-agents/real-session.txt`).
 - `agentlanes status --watch [SEC]`: live view that redraws until Ctrl-C.
 

@@ -347,3 +347,22 @@ class StatusWatch(Base):
         out, _ = p.communicate(timeout=10)
         self.assertEqual(p.returncode, 0)
         self.assertGreaterEqual(out.count('== claims'), 2)
+
+
+class Blame(HookTest):
+    """Allowed edits are recorded by the hook; `blame` lists who edited a path."""
+
+    def test_blame_records_allowed_and_blocked_edits(self):
+        a, b = self.spawn(['sleep', '60']), self.spawn(['sleep', '60'])
+        target = os.path.join(self.tmp, 'app.py')
+        self.assertEqual(self.run_hook(b.pid, target).stdout, '')          # allowed -> recorded as edit
+        r = self.ak('claim', 'mine', '--paths', target, '--pid', 'self',
+                    env=self.env_for(AGENTLANES_AGENT_PID=a.pid, AGENTLANES_AGENT='agent-%d' % a.pid))
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn('deny', self.run_hook(b.pid, target).stdout)         # blocked -> recorded as BLOCKED
+        out = self.ak('blame', target)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn('agent-%d' % b.pid, out.stdout)
+        self.assertIn('edit', out.stdout)
+        self.assertIn('BLOCKED', out.stdout)
+        self.assertEqual(self.ak('blame', os.path.join(self.tmp, 'nothing.py')).returncode, 1)

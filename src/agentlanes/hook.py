@@ -63,6 +63,11 @@ def blocking_claim(targets, tool=None):
         return ('%s is claimed by %s (claim "%s": %s, since %s). Do not edit it. Pick other work, or ask that agent '
                 'to release it; check with `%s who %s`.' % (q, c['by'], k, c.get('desc', ''), core.hm(c['since']),
                                                              core.NAME, target))
+    for target in targets:   # allowed: record who is about to edit what (`agentlanes blame PATH`)
+        try:
+            core.emit('edit', by=my_name or ('agent-%s' % my_pid if my_pid else None), path=target, tool=tool)
+        except Exception:
+            pass
     return None
 
 
