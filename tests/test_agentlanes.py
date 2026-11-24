@@ -331,3 +331,19 @@ class HookTest(Base):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class StatusWatch(Base):
+    """status --watch redraws until interrupted; one-shot status still works."""
+
+    def test_status_once_and_watch_parses(self):
+        import subprocess, signal, os, sys, time
+        r = self.ak('status')
+        self.assertEqual(r.returncode, 0)
+        self.assertIn('== claims', r.stdout)
+        p = subprocess.Popen(CLI + ['status', '--watch', '0.5'], stdout=subprocess.PIPE, text=True, env=self.env)
+        time.sleep(1.6)
+        p.send_signal(signal.SIGINT)
+        out, _ = p.communicate(timeout=10)
+        self.assertEqual(p.returncode, 0)
+        self.assertGreaterEqual(out.count('== claims'), 2)

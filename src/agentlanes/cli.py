@@ -199,6 +199,22 @@ def agents_cmd(o, out=print):
 
 
 def status_cmd(o):
+    every = getattr(o, 'watch', None)
+    if not every:
+        return _status_once()
+    every = max(0.5, every)
+    try:
+        while True:
+            sys.stdout.write('\x1b[H\x1b[2J')   # home + clear
+            print('%s status  %s  (every %gs, Ctrl-C to stop)' % (NAME, time.strftime('%H:%M:%S'), every))
+            _status_once()
+            sys.stdout.flush()
+            time.sleep(every)
+    except KeyboardInterrupt:
+        return 0
+
+
+def _status_once():
     print('== agents')
     agents_cmd(argparse.Namespace(all=False, json=False), out=lambda s: print('  ' + s))
     print('== claims')
@@ -287,7 +303,9 @@ def main(argv=None):
     a = sub.add_parser('agents')
     a.add_argument('--all', action='store_true')
     a.add_argument('--json', action='store_true')
-    sub.add_parser('status')
+    a = sub.add_parser('status')
+    a.add_argument('--watch', nargs='?', type=float, const=2.0, default=None, metavar='SEC',
+                   help='redraw every SEC seconds (default 2) until Ctrl-C')
     o = ap.parse_args(argv)
     c = o.cmd
     if c in ('claim', 'renew'):

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- `agentlanes status --watch [SEC]`: live view that redraws until Ctrl-C.
+
 ## 0.1.1 (2026-11-24)
 - CI on every push: unit tests, `agentlanes doctor` and `demo.sh` on Linux (Python 3.9–3.12) and macOS (3.10, 3.12).
 - macOS: first real runs; a platform-dependent test fixed.
