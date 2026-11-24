@@ -198,11 +198,15 @@ def agents_cmd(o, out=print):
     return 0
 
 
+def _rp(x):
+    return os.path.realpath(x).rstrip("/") or "/"
+
+
 def blame_cmd(o):
     p = os.path.realpath(os.path.expanduser(o.path)).rstrip('/') or '/'
     rows = [e for e in core.read_events(since=time.time() - o.days * 86400)
             if e.get('kind') in ('edit', 'claim.blocked') and e.get('path')
-            and (e['path'] == p or e['path'].startswith(p + '/'))]
+            and (_rp(e['path']) == p or _rp(e['path']).startswith(p + '/'))]
     if not rows:
         print('no recorded edits under %s in the last %g days (edits are recorded by the editor hook)' % (p, o.days))
         return 1

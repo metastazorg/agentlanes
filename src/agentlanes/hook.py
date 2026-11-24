@@ -65,7 +65,7 @@ def blocking_claim(targets, tool=None):
                                                              core.NAME, target))
     for target in targets:   # allowed: record who is about to edit what (`agentlanes blame PATH`)
         try:
-            core.emit('edit', by=my_name or ('agent-%s' % my_pid if my_pid else None), path=target, tool=tool)
+            core.emit('edit', by=my_name or ('agent-%s' % my_pid if my_pid else None), path=os.path.realpath(target), tool=tool)
         except Exception:
             pass
     return None
