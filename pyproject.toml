@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentlanes-cli"                  # PyPI name ("agentlanes" is too close to an existing project); command and import stay agentlanes
-version = "0.1.1"
+version = "0.2.0"
 description = "Claims, slots, an event log and a job queue for several AI coding agents sharing one machine"
 readme = "README.md"
 license = { text = "Apache-2.0" }

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-11-24)
 - `agentlanes mcp`: MCP server on stdio (standard library only). Tools: claim, release, who, list_claims, status, jobs, events, blame.
 - Claude Code plugin (`plugin/`) and marketplace (`.claude-plugin/marketplace.json`): MCP tools + edit hook + skill.
 - `agentlanes blame PATH`: the editor hook now records allowed edits (`edit` events) next to refusals; `blame` lists who edited what.
