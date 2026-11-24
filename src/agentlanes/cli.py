@@ -25,6 +25,7 @@ USAGE = """{n} {v} -- coordination for several coding agents on one machine
   {n} run [--claim NAME | --write PATH]... [--allow-tmp] [--allow-common] [--no-net] [--allow-port N] -- CMD...
                                         Linux: start CMD with writes confined to its lanes by the kernel (Landlock)
   {n} lane new NAME [--base REF] | list | done NAME   one git worktree + branch per agent, claimed
+  {n} board [--port 8765]               read-only live web page (127.0.0.1)
   {n} mcp                               MCP server on stdio (claude mcp add agentlanes -- agentlanes mcp)
   {n} doctor                            check PATH, state dir, flock, hooks, Landlock; prints fixes
   {n} hook claude-code|codex|cursor     PreToolUse hook for that agent (see examples/)
@@ -291,6 +292,13 @@ def main(argv=None):
         return 0
     if argv[0] == 'slot':
         return slot_cmd(argv[1:])
+    if argv[0] == 'board':
+        from . import board
+        a = argparse.ArgumentParser(prog='%s board' % NAME, description='Read-only live web page of agents, claims, slots, jobs.')
+        a.add_argument('--port', type=int, default=8765)
+        a.add_argument('--host', default='127.0.0.1', help='default 127.0.0.1 (this machine only)')
+        o = a.parse_args(argv[1:])
+        return board.serve(o.host, o.port)
     if argv[0] == 'lane':
         from . import lanes
         a = argparse.ArgumentParser(prog='%s lane' % NAME, description='One git worktree per agent, covered by a claim.')

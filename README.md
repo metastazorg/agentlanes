@@ -138,6 +138,12 @@ returns to the queue (`job.requeue`).
   `slot.timeout`, `slot.oom` and `job.requeue` (change with `AGENTLANES_NOTIFY_KINDS=kind1,kind2`). Example:
   `AGENTLANES_NOTIFY_CMD='jq -r .kind | xargs notify-send agentlanes'`.
 
+### Board: a live web page
+
+`agentlanes board` serves a read-only page on http://127.0.0.1:8765/ that redraws every 2 seconds: running agents with
+their claims and memory, claims, slots (busy, free, stale, waiting), the job queue and recent events, with conflicts in
+red. Standard library only; it binds to localhost and the page loads nothing from outside.
+
 ### Kernel-enforced lanes (Linux): `agentlanes run`
 
 ```sh
