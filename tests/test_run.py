@@ -229,7 +229,8 @@ class AbiLogic(unittest.TestCase):
 
     def test_abi_version_errors(self):
         for err, text in ((errno.ENOSYS, 'no Landlock'), (errno.EOPNOTSUPP, 'disabled')):
-            with mock.patch.object(landlock, '_call', side_effect=OSError(err, 'x')):
+            with mock.patch.object(landlock, '_call', side_effect=OSError(err, 'x')), \
+                    mock.patch.object(landlock.sys, 'platform', 'linux'):
                 with self.assertRaises(landlock.Unsupported) as cm:
                     landlock.abi_version()
                 self.assertIn(text, str(cm.exception))
