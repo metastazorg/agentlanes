@@ -4,9 +4,16 @@
 
 <sub>A recorded run of <code>./demo.sh</code> (real timing), then a replay of a <a href="https://github.com/metastazorg/agentlanes/blob/main/examples/landlock/real-session.txt">real Claude Code session</a> under <code>agentlanes run</code>. Regenerate with <code>tools/make_demo_svg.py</code>; video: <a href="https://github.com/metastazorg/agentlanes/blob/main/docs/demo.mp4">docs/demo.mp4</a>.</sub>
 
-[![test](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml/badge.svg)](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml)
+[![test](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml/badge.svg)](https://github.com/metastazorg/agentlanes/actions/workflows/test.yml) [![PyPI](https://img.shields.io/pypi/v/agentlanes-cli)](https://pypi.org/project/agentlanes-cli/)
 
 Coordination for several AI coding agents (Claude Code, Codex, Cursor, Aider, ...) working on one Linux or macOS machine.
+
+```sh
+pip install agentlanes-cli                                   # CLI + MCP server, Python 3.9+, no dependencies
+# in Claude Code:
+/plugin marketplace add metastazorg/agentlanes
+/plugin install agentlanes@metastaz                          # MCP tools + edit hook + skill
+```
 
 ## The problem
 
