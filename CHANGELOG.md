@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-11-24)
 - `agentlanes board`: read-only live web page (localhost) of agents, claims, slots, jobs and events.
 - `agentlanes lane new|list|done`: one git worktree per agent on branch `lane/NAME`, claimed so other agents are kept out; `done` refuses to drop unsaved work and keeps the branch. MCP tool `lane`.
 

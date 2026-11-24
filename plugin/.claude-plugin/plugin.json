@@ -1,6 +1,6 @@
 {
   "name": "agentlanes",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Several coding agents on one machine without collisions: file claims as native tools (MCP), a hook that stops edits to files another agent holds, a shared job queue and an event log.",
   "author": { "name": "Metastaz", "url": "https://metastaz.org" },
   "homepage": "https://github.com/metastazorg/agentlanes",
