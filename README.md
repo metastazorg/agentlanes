@@ -258,7 +258,7 @@ and without a systemd user session for the memory cap. The Claude Code hook and 
 real Claude Code session. Landlock ABI 5 and 6 (device ioctl, `--isolate`) are unit-tested only: no such kernel was
 available. x86_64 uses the same Landlock syscall numbers but was not run.
 
-**macOS (CI on GitHub's macOS runners, Python 3.10 and 3.12).** Every push runs the full unit suite, `agentlanes doctor`
+**macOS (CI on a GitHub macOS 15 runner, Python 3.12; 3.10 passed there too on 11-24).** Every push runs the full unit suite, `agentlanes doctor`
 and `demo.sh` on macOS: the suite passes (the Landlock tests skip, as they should), and the demo blocks all three
 colliding edits and reclaims the crashed agent's lease. The macOS code paths use `ps -o stat= / lstart= / ppid=` with
 `LC_ALL=C`, `lsof -d cwd`, `vm_stat`, and an RSS watchdog instead of systemd; `demo.sh` runs under macOS's bash 3.2.

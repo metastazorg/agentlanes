@@ -29,13 +29,12 @@ jobs:
       - name: Demo
         run: bash demo.sh
   macos:
-    # The second macos-latest job of a run was left unassigned for 15 minutes three times
-    # ("The job was not acquired by Runner"), even one at a time; spread over two pinned images instead.
+    # One macOS job: on this account a second macOS job in the same run was never given a runner
+    # (four runs, cancelled after 15 min, "not acquired by Runner"), in parallel, serial or on macos-14.
+    # Python 3.9-3.12 are covered on Linux.
     strategy:
-      fail-fast: false
       matrix:
         include:
-          - {os: macos-14, python: "3.10"}
           - {os: macos-15, python: "3.12"}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
