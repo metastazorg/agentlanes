@@ -4,16 +4,40 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  test:
+  linux:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
+        os: [ubuntu-latest, ubuntu-22.04]
         python: ["3.10", "3.12"]
         include:
           - os: ubuntu-22.04
             python: "3.9"
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: pip install .
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Doctor
+        run: agentlanes doctor || true
+      - name: Demo
+        run: bash demo.sh
+  macos:
+    # One macOS job at a time: with two in parallel the hosted pool twice left one unassigned
+    # for 15 minutes ("The job was not acquired by Runner") and the run was cancelled.
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python: ["3.10", "3.12"]
+    runs-on: macos-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
