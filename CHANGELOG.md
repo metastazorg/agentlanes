@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Example: two real Claude Code agents coordinating on one file (`examples/two-agents/real-session.txt`).
 - `agentlanes status --watch [SEC]`: live view that redraws until Ctrl-C.
 
 ## 0.1.1 (2026-11-24)

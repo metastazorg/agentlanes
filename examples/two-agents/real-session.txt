@@ -1,0 +1,28 @@
+# Two real Claude Code agents (model haiku, bypassPermissions) on one file, coordinated by agentlanes, 2026-11-24.
+# Setup: agentlanes init --claude-code --agents-md (CLAUDE.md = AGENTS.md snippet). agent-A starts; agent-B starts 12 s later.
+# agent-A was told to hold its claim for 45 s after editing. Paths shortened.
+
+## agent-A final report
+Added `farewell()` to `app.py`, returning `"bye"`, below the existing `greet()`.
+I claimed `app.py` as `add-farewell` first, checked the file parses, held the claim through `sleep 45`, then released it. No claims remain.
+The project has no test suite, so I checked only that the file parses (no run of the function).
+
+## agent-B final report
+Added the docstring `"""Return a short greeting string."""` to `greet()` in `app.py`; the parse check reads it back correctly.
+`app.py` was HELD by agent-A (add-farewell) with `PATH HELD`, so I didn't use `--share` and waited; agent-A released after about 48 s.
+I then claimed `app.py` as `greet-docstring`, made the edit, and released the claim (no active claims now).
+
+## app.py afterwards (both edits present)
+def greet():
+    """Return a short greeting string."""
+    return "hi"
+
+def farewell():
+    return "bye"
+
+## agentlanes events
+11-24 08:25:35 claim.add        agent-A        [add-farewell] Add farewell() returning 'bye' to app.py ttl=120 pid=1816925 paths=~/proj/app.py
+11-24 08:25:45 claim.conflict   agent-B        [greet-docstring] holder=agent-A holder_topic=add-farewell path=~/proj/app.py
+11-24 08:26:23 claim.done       agent-A        [add-farewell] held_s=48
+11-24 08:26:25 claim.add        agent-B        [greet-docstring] Add one-line docstring to greet() in app.py ttl=120 pid=1817157 paths=~/proj/app.py
+11-24 08:26:27 claim.done       agent-B        [greet-docstring] held_s=2

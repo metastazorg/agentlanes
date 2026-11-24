@@ -44,7 +44,7 @@ agentlanes status                     # agents, claims, slots, jobs, recent even
 ```
 
 In Claude Code the hook refuses an edit to a path another agent has claimed, even if the agent forgot to check
-([a real session](https://github.com/metastazorg/agentlanes/blob/main/examples/claude-code/real-session.txt)). Run `./demo.sh` to see three agents compete for one file and
+([a real session](https://github.com/metastazorg/agentlanes/blob/main/examples/claude-code/real-session.txt)). Two real Claude Code agents sharing one file: agent B saw `PATH HELD`, waited for agent A to release, then made its edit; both edits survived ([transcript](https://github.com/metastazorg/agentlanes/blob/main/examples/two-agents/real-session.txt)). Run `./demo.sh` to see three agents compete for one file and
 one build slot (transcript: [demo-output.txt](demo-output.txt)); on Linux with Landlock it ends with a kernel-lane step.
 
 On Linux, start an agent under `agentlanes run` and the kernel itself refuses writes outside its claimed paths, including
