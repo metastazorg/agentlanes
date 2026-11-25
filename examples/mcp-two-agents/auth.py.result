@@ -1,0 +1,18 @@
+import hmac
+
+MAX_FAILED_ATTEMPTS = 5
+
+# username -> number of consecutive failed login attempts
+_failed_attempts = {}
+
+
+def login(user, pw):
+    if _failed_attempts.get(user, 0) >= MAX_FAILED_ATTEMPTS:
+        return False
+
+    if user == "admin" and hmac.compare_digest(pw.encode("utf-8"), b"admin"):
+        _failed_attempts.pop(user, None)
+        return True
+
+    _failed_attempts[user] = _failed_attempts.get(user, 0) + 1
+    return False

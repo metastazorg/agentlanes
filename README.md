@@ -209,7 +209,9 @@ Tools: `claim` (topic, paths, desc, ttl), `release`, `who`, `list_claims`, `stat
 `lane` (new/list/done), `events`, `blame`. They run the same code as the CLI. A claim made through MCP lives as long as the agent that made it:
 when the agent exits, its claims are released. `HELD by ...` comes back as a normal answer, not a tool error, so the
 agent reads it and picks other work. Status: protocol and tools covered by tests (`tests/test_mcp.py`); the plugin
-manifest passes `claude plugin validate`; a recorded real-session transcript will follow.
+manifest passes `claude plugin validate`. Real session ([examples/mcp-two-agents](examples/mcp-two-agents/)): two Claude Code
+agents got overlapping tasks on one file; B asked `who`, got `HELD by` A, waited and retried; A exited without releasing and
+its lease was reaped at once; B then claimed, edited on top of A's change and released. Both changes landed, none overwritten.
 
 ## Hooks and instructions per agent
 

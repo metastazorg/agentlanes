@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Example: two real Claude Code agents coordinating through the MCP server (`examples/mcp-two-agents/`), including a lease reaped when an agent exits without releasing.
+
 ## 0.3.2 (2026-11-25)
 - `agentlanes board` shows lanes (holder, branch, unsaved changes).
 - PyPI: clearer description and search keywords.
