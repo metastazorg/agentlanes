@@ -73,6 +73,24 @@ class MCP(Base):
         self.assertEqual(lines[0]['error']['code'], -32700)
         self.assertEqual(lines[1]['id'], 1)
 
+    def test_malformed_requests_never_crash(self):
+        # [11-25] a list as arguments used to raise TypeError and kill the server (and with it the agent's tools)
+        import random
+        rnd = random.Random(1125)
+        junk = [None, 0, 1.5, True, 'x', '', [], ['a'], [1, 2], {}, {'a': 1}, 'a' * 5000, 'a\x00b']
+        names = ['claim', 'release', 'who', 'jobs', 'lane', 'events', 'blame', 'status', 'nope', None, 5]
+        msgs = []
+        for i in range(1, 121):
+            args = {k: rnd.choice(junk) for k in rnd.sample(['topic', 'paths', 'action', 'n', 'ttl_minutes', 'share',
+                                                              'name', 'path', 'zzz'], rnd.randint(0, 3))}
+            params = rnd.choice([{'name': rnd.choice(names), 'arguments': rnd.choice([args, args, ['x'], 'bad', None])},
+                                 'bad', [1], None, {'arguments': args}])
+            msgs.append(req(i, 'tools/call', params))
+        msgs.append(req(999, 'ping'))
+        out = self.serve(*msgs)
+        self.assertEqual(sorted(out), list(range(1, 121)) + [999])   # every request answered, server alive at the end
+        for i in range(1, 121):
+            self.assertTrue('error' in out[i] or 'content' in out[i]['result'], out[i])
 
 if __name__ == '__main__':
     unittest.main()

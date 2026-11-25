@@ -107,13 +107,43 @@ def _argv(name, a):
     raise ValueError('unknown tool or action')
 
 
+_TYPES = {'string': str, 'integer': int, 'boolean': bool, 'array': list}
+
+
+def _check(name, args):
+    """Arguments must match the tool's inputSchema (types, required, no extras). Returns an error text or None."""
+    if not isinstance(args, dict):
+        return 'arguments must be an object'
+    schema = {n: s for n, _, s in TOOLS}[name]
+    props = schema.get('properties', {})
+    for k in schema.get('required', []):
+        if k not in args:
+            return 'missing required argument: %s' % k
+    for k, v in args.items():
+        if k not in props:
+            return 'unknown argument: %s' % k
+        t = props[k].get('type')
+        if t and not (isinstance(v, _TYPES[t]) and not (t == 'integer' and isinstance(v, bool))):
+            return 'argument %s must be %s' % (k, t)
+        if t == 'array' and not all(isinstance(x, str) for x in v):
+            return 'argument %s must be a list of strings' % k
+        if t == 'string' and ('\x00' in v or len(v) > 4096):
+            return 'argument %s is not a usable string' % k
+        if 'enum' in props[k] and v not in props[k]['enum']:
+            return 'argument %s must be one of %s' % (k, ', '.join(props[k]['enum']))
+    return None
+
+
 def call(name, args):
     """Run one tool. Returns (text, is_error)."""
     from . import cli
     buf = io.StringIO()
+    bad = _check(name, args)
+    if bad:
+        return 'bad arguments: %s' % bad, True
     try:
-        argv = _argv(name, args or {})
-    except (KeyError, ValueError) as e:
+        argv = _argv(name, args)
+    except (KeyError, ValueError, TypeError) as e:
         return 'bad arguments: %s' % e, True
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
         try:
@@ -141,6 +171,8 @@ def handle(msg):
         res = {'tools': [{'name': n, 'description': d, 'inputSchema': s} for n, d, s in TOOLS]}
     elif method == 'tools/call':
         p = msg.get('params') or {}
+        if not isinstance(p, dict):
+            return {'jsonrpc': '2.0', 'id': mid, 'error': {'code': -32602, 'message': 'params must be an object'}}
         if p.get('name') not in {t[0] for t in TOOLS}:
             return {'jsonrpc': '2.0', 'id': mid, 'error': {'code': -32602, 'message': 'unknown tool: %s' % p.get('name')}}
         text, err = call(p['name'], p.get('arguments') or {})
@@ -161,7 +193,11 @@ def serve(inp=None, out=None):
         except ValueError:
             rep = {'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': 'parse error'}}
         else:
-            rep = handle(msg) if isinstance(msg, dict) else None
+            try:
+                rep = handle(msg) if isinstance(msg, dict) else None
+            except Exception as e:          # one bad message must never take the server (and the agent's tools) down
+                rep = {'jsonrpc': '2.0', 'id': msg.get('id') if isinstance(msg, dict) else None,
+                       'error': {'code': -32603, 'message': 'internal error: %s' % type(e).__name__}}
         if rep is not None:
             out.write(json.dumps(rep) + '\n')
             out.flush()
