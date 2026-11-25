@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.3 (2026-11-25)
 - MCP server: arguments are checked against each tool's schema (type, required, enum, unknown keys) and a malformed request can no longer crash the server; fuzz test with 120 random requests.
 - `who` logs a `claim.wait` event when it finds a path held (who waited for whom shows up in events, board and blame).
 - Example: two real Claude Code agents coordinating through the MCP server (`examples/mcp-two-agents/`), including a lease reaped when an agent exits without releasing.
