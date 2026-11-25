@@ -38,6 +38,8 @@ class Board(Base):
         self.assertIn('agentlanes board', page)
         st = json.loads(urllib.request.urlopen(url + 'api/state', timeout=5).read())
         self.assertIn('ui', st['claims'])
+        self.assertIn('lanes', st)
+        self.assertIn('id="lanes"', page)
         self.assertEqual(st['jobs'][0]['title'], 'write docs')
         self.assertTrue(any(e['kind'] == 'claim.add' for e in st['events']))
         with self.assertRaises(urllib.error.HTTPError) as cm:

@@ -7,7 +7,7 @@ import json
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import NAME, __version__, claims, core, jobs, procs, slots
+from . import NAME, __version__, claims, core, jobs, lanes, procs, slots
 
 PAGE = r"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>agentlanes board</title>
@@ -33,6 +33,7 @@ h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute
 <section><h2>Agents</h2><div id="agents"></div></section>
 <section><h2>Claims</h2><div id="claims"></div></section>
 <section><h2>Slots</h2><div id="slots"></div></section>
+<section><h2>Lanes</h2><div id="lanes"></div></section>
 <section><h2>Jobs</h2><div id="jobs"></div></section>
 <section style="grid-column:1/-1" id="ev"><h2>Recent events</h2><div id="events"></div></section>
 </main>
@@ -50,6 +51,7 @@ document.getElementById('mem').textContent=d.mem_mb==null?'':d.mem_mb+' MB free'
 fill('agents',d.agents.map(a=>row(a.kind+'-'+a.pid,a.kind+'  '+a.pid,(a.claims.join(', ')||'no claims')+' · '+a.mem_mb+' MB · up '+ago(a.age_s),a.headless?'batch':'chat')),'no coding agents running');
 fill('claims',Object.entries(d.claims).map(([k,c])=>row(c.by,k,(c.desc||'')+((c.paths||[]).length?' · '+c.paths.join(', '):''),ago(now-c.since))),'nothing claimed');
 fill('slots',d.slots.flatMap(s=>s.slots.map(x=>row(x.who&&x.who.by||null,s.name+' #'+x.no,x.who&&x.who.cmd||'',x.state,x.state)).concat(s.waiting?[row(null,s.name,s.waiting+' waiting')]:[])),'no slots used yet');
+fill('lanes',(d.lanes||[]).map(l=>row(l.holder||null,l.name,l.branch+(l.desc?' · '+l.desc:''),l.missing?'missing':l.dirty?'unsaved':'clean',l.missing?'stale':l.dirty?'busy':'free')),d.lanes==null?'not in a git repository':'no lanes (agentlanes lane new NAME)');
 fill('jobs',d.jobs.map(j=>row(j.by||null,'#'+j.id+' '+j.title,j.state+(j.by?' · '+j.by:''),'p'+j.prio,j.state=='taken'?'busy':'')),'queue empty');
 fill('events',d.events.slice().reverse().map(e=>row(null,e.line,null,e.kind,e.kind.includes('conflict')||e.kind.includes('blocked')?'conflict':'')),'no events in the last 24 h');
 }catch(e){document.getElementById('st').textContent='disconnected'}}
@@ -68,8 +70,12 @@ def state():
         sl.append({'name': n, 'waiting': len(slots.waiters(n)),
                    'slots': [{'no': i, 'state': st, 'who': who} for i, st, who in slots.status(n, clean=False)]})
     evs = list(core.read_events(since=now - 86400))[-30:]
+    try:
+        ln = lanes.listing()
+    except (OSError, ValueError):
+        ln = None
     return {'now': now, 'version': __version__, 'state_dir': core.state_dir(), 'mem_mb': procs.mem_available_mb(),
-            'agents': rows, 'claims': cl, 'slots': sl, 'jobs': jobs.items(),
+            'agents': rows, 'claims': cl, 'slots': sl, 'lanes': ln, 'jobs': jobs.items(),
             'events': [{'kind': e.get('kind', ''), 'line': core.fmt_event(e)} for e in evs]}
 
 
