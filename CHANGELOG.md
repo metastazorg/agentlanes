@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.3.2 (2026-11-25)
 - `agentlanes board` shows lanes (holder, branch, unsaved changes).
+- PyPI: clearer description and search keywords.
 
 ## 0.3.1 (2026-11-25)
 - `agentlanes doctor` starts the project MCP server and checks it answers `initialize`.
