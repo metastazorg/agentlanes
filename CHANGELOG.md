@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- `claim --path P` (repeatable) next to `--paths a,b`; the MCP server now passes each path separately, so a file or directory name containing a comma is no longer split into two paths.
+
 ## 0.3.3 (2026-11-25)
 - MCP server: arguments are checked against each tool's schema (type, required, enum, unknown keys) and a malformed request can no longer crash the server; fuzz test with 120 random requests.
 - `who` logs a `claim.wait` event when it finds a path held (who waited for whom shows up in events, board and blame).

@@ -10,7 +10,7 @@ from . import NAME, __version__, claims, core, hook, jobs, onboard, procs, slots
 
 USAGE = """{n} {v} -- coordination for several coding agents on one machine
 
-  {n} claim TOPIC [--desc TEXT] [--paths a,b] [--pid self|PID] [--ttl MIN] [--share] [--by WHO]
+  {n} claim TOPIC [--desc TEXT] [--paths a,b | --path P ...] [--pid self|PID] [--ttl MIN] [--share] [--by WHO]
   {n} release TOPIC [--by WHO]          {n} renew TOPIC [--ttl MIN]
   {n} who PATH...                       which claim covers these paths (exit 1 if any)
   {n} check TOPIC | list [--json] | reap
@@ -47,6 +47,7 @@ def p_claims(sub):
         a.add_argument('--ttl', type=int, default=120, help='minutes (default 120)')
         a.add_argument('--pid', help="'self' (enclosing agent) or a pid: claim dies with that process")
         a.add_argument('--paths', default='', help='comma-separated files/dirs')
+        a.add_argument('--path', action='append', default=[], help='one file/dir, repeatable (safe for names with commas)')
         a.add_argument('--share', action='store_true')
     a = sub.add_parser('release')
     a.add_argument('topic')
@@ -369,7 +370,7 @@ def main(argv=None):
     o = ap.parse_args(argv)
     c = o.cmd
     if c in ('claim', 'renew'):
-        return claims.add(o.topic, _by(o), o.desc, o.ttl, o.pid, o.paths.split(','), o.share, renew=(c == 'renew'))
+        return claims.add(o.topic, _by(o), o.desc, o.ttl, o.pid, [x for x in o.paths.split(',') if x] + o.path, o.share, renew=(c == 'renew'))
     if c == 'release':
         return claims.release(o.topic, None if o.force else _by(o))
     if c == 'who':

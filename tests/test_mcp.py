@@ -73,6 +73,12 @@ class MCP(Base):
         self.assertEqual(lines[0]['error']['code'], -32700)
         self.assertEqual(lines[1]['id'], 1)
 
+    def test_path_with_comma_stays_one_path(self):
+        d = os.path.join(self.tmp, 'a,b')
+        os.makedirs(d)
+        out = self.serve(tool(1, 'claim', topic='t', paths=[d]), tool(2, 'list_claims'))
+        self.assertEqual(json.loads(self.text(out[2]))['t']['paths'], [d])
+
     def test_malformed_requests_never_crash(self):
         # [11-25] a list as arguments used to raise TypeError and kill the server (and with it the agent's tools)
         import random

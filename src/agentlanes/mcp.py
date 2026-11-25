@@ -63,8 +63,8 @@ def _argv(name, a):
         v = ['claim', a['topic'], '--pid', _lease_pid()]
         if a.get('desc'):
             v += ['--desc', a['desc']]
-        if a.get('paths'):
-            v += ['--paths', ','.join(a['paths'])]
+        for x in a.get('paths') or []:          # one --path each: a comma in a file name must not split it
+            v += ['--path', x]
         if a.get('ttl_minutes'):
             v += ['--ttl', str(int(a['ttl_minutes']))]
         if a.get('share'):
