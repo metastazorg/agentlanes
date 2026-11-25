@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agentlanes-cli"                  # PyPI name ("agentlanes" is too close to an existing project); command and import stay agentlanes
 version = "0.3.1"
-description = "Claims, slots, an event log and a job queue for several AI coding agents sharing one machine"
+description = "Run several AI coding agents (Claude Code, Codex, Cursor) on one machine without collisions: file claims, a git worktree per agent, memory-capped slots, an MCP server, Landlock write lanes"
+keywords = ["ai-agents", "coding-agents", "claude-code", "codex", "cursor", "mcp", "mcp-server", "multi-agent", "git-worktree", "landlock", "file-locking", "developer-tools"]
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.9"
@@ -22,6 +23,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/metastazorg/agentlanes"
 Issues = "https://github.com/metastazorg/agentlanes/issues"
+Changelog = "https://github.com/metastazorg/agentlanes/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agentlanes = "agentlanes.cli:entry"        # rename: left side is the command name
