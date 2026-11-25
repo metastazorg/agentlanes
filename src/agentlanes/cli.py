@@ -208,15 +208,16 @@ def _rp(x):
 def blame_cmd(o):
     p = os.path.realpath(os.path.expanduser(o.path)).rstrip('/') or '/'
     rows = [e for e in core.read_events(since=time.time() - o.days * 86400)
-            if e.get('kind') in ('edit', 'claim.blocked') and e.get('path')
+            if e.get('kind') in ('edit', 'claim.blocked', 'claim.wait') and e.get('path')
             and (_rp(e['path']) == p or _rp(e['path']).startswith(p + '/'))]
     if not rows:
         print('no recorded edits under %s in the last %g days (edits are recorded by the editor hook)' % (p, o.days))
         return 1
     for e in rows:
-        what = 'edit   ' if e['kind'] == 'edit' else 'BLOCKED'
+        what = {'edit': 'edit   ', 'claim.wait': 'WAITED '}.get(e['kind'], 'BLOCKED')
+        extra = e.get('tool') or ('for ' + e['holder'] if e.get('holder') else '')
         print('%s  %s  %-14s %-10s %s' % (time.strftime('%m-%d %H:%M:%S', time.localtime(e.get('t', 0))), what,
-                                          e.get('by') or '?', e.get('tool') or '', e['path']))
+                                          e.get('by') or '?', extra, e['path']))
     return 0
 
 

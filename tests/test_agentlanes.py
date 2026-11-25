@@ -118,6 +118,9 @@ class ClaimsTest(Base):
         r = self.ak('who', d + '/deep/file.txt')
         self.assertEqual(r.returncode, 1)
         self.assertIn('HELD by tester (refactor', r.stdout)
+        w = self.events('claim.wait')                       # the look is logged: who waited for whom
+        self.assertTrue(w and w[-1]['holder'] == 'tester' and w[-1]['topic'] == 'refactor', w)
+        self.assertIn('WAITED', self.ak('blame', d).stdout)
 
     def test_lease_dies_with_holder_process(self):
         holder = self.spawn(['sleep', '60'])

@@ -201,6 +201,8 @@ def cmd_who(paths, out=print):
         hits = holders_of(p, d)
         for k, c, q in hits:
             out('HELD by %s (%s, since %s): %s -- %s' % (c['by'], k, core.hm(c['since']), q, c.get('desc', '')))
+            # someone looked and found it held: shows up in events/board/blame as "X waited for Y"
+            core.emit('claim.wait', by=procs.default_by(), topic=k, holder=c['by'], path=q)
         if hits:
             rc = 1
         else:

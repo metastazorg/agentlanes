@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- `who` logs a `claim.wait` event when it finds a path held (who waited for whom shows up in events, board and blame).
 - Example: two real Claude Code agents coordinating through the MCP server (`examples/mcp-two-agents/`), including a lease reaped when an agent exits without releasing.
 
 ## 0.3.2 (2026-11-25)
@@ -19,6 +20,7 @@
 - `agentlanes mcp`: MCP server on stdio (standard library only). Tools: claim, release, who, list_claims, status, jobs, events, blame.
 - Claude Code plugin (`plugin/`) and marketplace (`.claude-plugin/marketplace.json`): MCP tools + edit hook + skill.
 - `agentlanes blame PATH`: the editor hook now records allowed edits (`edit` events) next to refusals; `blame` lists who edited what.
+- `who` logs a `claim.wait` event when it finds a path held (who waited for whom shows up in events, board and blame).
 - Example: two real Claude Code agents coordinating on one file (`examples/two-agents/real-session.txt`).
 - `agentlanes status --watch [SEC]`: live view that redraws until Ctrl-C.
 
