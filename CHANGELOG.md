@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- MCP: `renew` tool; claims made through MCP default to a 480 min safety cap (the lease still ends when the agent exits), so a long session no longer loses its claim silently after 2 h.
 - `claim --path P` (repeatable) next to `--paths a,b`; the MCP server now passes each path separately, so a file or directory name containing a comma is no longer split into two paths.
 
 ## 0.3.3 (2026-11-25)

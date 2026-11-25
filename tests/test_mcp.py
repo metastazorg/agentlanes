@@ -73,6 +73,17 @@ class MCP(Base):
         self.assertEqual(lines[0]['error']['code'], -32700)
         self.assertEqual(lines[1]['id'], 1)
 
+    def test_long_default_ttl_and_renew(self):
+        import time
+        out = self.serve(tool(1, 'claim', topic='long', paths=['x.py']), tool(2, 'list_claims'),
+                         tool(3, 'renew', topic='long', ttl_minutes=600), tool(4, 'list_claims'),
+                         tool(5, 'renew', topic='nobody-holds-this'))
+        c1, c2 = json.loads(self.text(out[2]))['long'], json.loads(self.text(out[4]))['long']
+        self.assertGreater(c1['until'] - time.time(), 470 * 60)          # a 2 h session keeps its claim
+        self.assertGreater(c2['until'] - time.time(), 590 * 60)
+        self.assertEqual(c2['paths'], c1['paths'])                        # renew keeps the paths
+        self.assertIn('not held by you', self.text(out[5]))
+
     def test_path_with_comma_stays_one_path(self):
         d = os.path.join(self.tmp, 'a,b')
         os.makedirs(d)

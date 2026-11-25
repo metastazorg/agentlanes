@@ -205,7 +205,7 @@ claude mcp add agentlanes -- agentlanes mcp
 agentlanes init --mcp
 ```
 
-Tools: `claim` (topic, paths, desc, ttl), `release`, `who`, `list_claims`, `status`, `jobs` (list/add/take/done/drop),
+Tools: `claim` (topic, paths, desc, ttl), `release`, `renew`, `who`, `list_claims`, `status`, `jobs` (list/add/take/done/drop),
 `lane` (new/list/done), `events`, `blame`. They run the same code as the CLI. A claim made through MCP lives as long as the agent that made it:
 when the agent exits, its claims are released. `HELD by ...` comes back as a normal answer, not a tool error, so the
 agent reads it and picks other work. Status: protocol and tools covered by tests (`tests/test_mcp.py`); the plugin

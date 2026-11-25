@@ -26,11 +26,14 @@ TOOLS = [
      dict(_S(topic=_str('short name of the work, e.g. "auth-refactor"'),
              desc=_str('one line: what you are doing'),
              paths={'type': 'array', 'items': {'type': 'string'}, 'description': 'files or directories this work will edit'},
-             ttl_minutes={'type': 'integer', 'description': 'lease length, default 120'},
+             ttl_minutes={'type': 'integer', 'description': 'safety cap in minutes, default 480; the claim ends anyway when your agent exits'},
              share={'type': 'boolean', 'description': 'allow others to claim the same paths (read-mostly work)'}),
           required=['topic'])),
     ('release', 'Release a topic you claimed, as soon as the work is done.',
      dict(_S(topic=_str('the topic to release')), required=['topic'])),
+    ('renew', 'Extend a claim you hold (for work that runs longer than its ttl).',
+     dict(_S(topic=_str('the topic to renew'), ttl_minutes={'type': 'integer', 'description': 'new length, default 480'}),
+          required=['topic'])),
     ('who', 'Which claims cover these paths. Call before editing a file you did not claim.',
      dict(_S(paths={'type': 'array', 'items': {'type': 'string'}}), required=['paths'])),
     ('list_claims', 'All active claims on this machine (JSON).', _S()),
@@ -65,13 +68,16 @@ def _argv(name, a):
             v += ['--desc', a['desc']]
         for x in a.get('paths') or []:          # one --path each: a comma in a file name must not split it
             v += ['--path', x]
-        if a.get('ttl_minutes'):
-            v += ['--ttl', str(int(a['ttl_minutes']))]
+        # [11-25] the lease already ends with the agent; the ttl only guards a hung-but-alive agent, so make it long
+        # enough for a real session (a 2 h refactor must not lose its claim silently)
+        v += ['--ttl', str(int(a.get('ttl_minutes') or 480))]
         if a.get('share'):
             v.append('--share')
         return v
     if name == 'release':
         return ['release', a['topic']]
+    if name == 'renew':
+        return ['renew', a['topic'], '--pid', _lease_pid(), '--ttl', str(int(a.get('ttl_minutes') or 480))]
     if name == 'who':
         return ['who'] + list(a['paths'])
     if name == 'list_claims':
