@@ -308,6 +308,15 @@ the queue.
 **Does it work with agents I do not control?** Only as far as the agent follows instructions, unless it has a hook (see
 the table).
 
+**How is this different from other agent lock tools?**
+Tools like [Lockpick](https://github.com/simke9445/lockpick), [agent-lock](https://github.com/kigster/agent-lock),
+[Catenary MCP](https://docs.rs/crate/catenary-mcp) and [Bothread](https://www.indiehackers.com/product/bothread) also let
+agents claim files before editing, and some add a shared chat or an approval step. Those locks are advisory: they protect
+a file only from agents that check. agentlanes has the same claims (plus a Claude Code hook that refuses edits), and adds
+three things they do not: `agentlanes run`, where the Linux kernel (Landlock) refuses writes outside the agent's claimed
+paths even through shell commands; memory-capped slots for builds and tests, so parallel agents do not run the machine
+out of memory; and a git worktree per agent (`lane`) that still shares the project's claims, slots and event log.
+
 ## How we use it
 
 We are two founders who run many coding agents at once on one Raspberry Pi with 8 GB of RAM: interactive sessions,
