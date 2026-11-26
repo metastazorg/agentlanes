@@ -110,6 +110,11 @@ def serve(host='127.0.0.1', port=8765, out=print):
     srv = ThreadingHTTPServer((host, port), Handler)
     out('%s board on http://%s:%d/  (read-only; Ctrl-C to stop)' % (NAME, host, srv.server_address[1]))
     try:
+        import sys
+        sys.stdout.flush()   # the URL must show even when stdout is a pipe or a log file (block-buffered)
+    except Exception:
+        pass
+    try:
         srv.serve_forever()
     except KeyboardInterrupt:
         pass

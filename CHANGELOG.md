@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- `board`: the URL line is flushed at once, so `agentlanes board > board.log &` shows where the page is (it was held in the pipe buffer).
 - `init` / `doctor`: when `agentlanes` is not on PATH, the fix names the real place (activate this virtualenv, add its bin/ to PATH, or `pipx install agentlanes-cli`) instead of a checkout-only `pip install .`; `init` also says the hook already works through the full path.
 
 ## 0.3.4 (2026-11-25)
