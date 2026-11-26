@@ -38,6 +38,17 @@ alwaysApply: true
 HOOK_MATCHER = 'Edit|Write|MultiEdit|NotebookEdit'
 
 
+def _path_fix():
+    """Concrete advice for 'not on PATH': where this copy lives and the usual ways to expose it (venv, pipx, checkout)."""
+    here = os.path.dirname(os.path.realpath(sys.argv[0])) if sys.argv and sys.argv[0] else ''
+    venv = os.path.dirname(here) if here and os.path.isfile(os.path.join(here, 'activate')) else ''
+    if venv:
+        return 'activate the virtualenv first (`source %s/bin/activate`), or add %s to PATH, or `pipx install agentlanes-cli`' % (venv, here)
+    if here and os.path.basename(here) == 'bin':
+        return 'add %s to PATH, or `pipx install agentlanes-cli`' % here
+    return '`pipx install agentlanes-cli` (or `pip install agentlanes-cli` in an active virtualenv); from a checkout: `pip install .`'
+
+
 def self_command():
     """How a hook should call us: the bare name if it is on PATH, else the absolute path of this checkout."""
     if shutil.which(NAME):
@@ -203,7 +214,8 @@ def init(root=None, claude_code=False, agents_md=False, claude_md=False, cursor=
     if not (claude_code or agents_md or claude_md or cursor or mcp):
         out('next: `%s init --claude-code --mcp --agents-md` wires the Claude Code hook, MCP tools and agent instructions' % NAME)
     if not shutil.which(NAME):
-        out('warn  `%s` is not on PATH; agents and hooks need it there (pip install .)' % NAME)
+        out('warn  `%s` is not on PATH; the hook uses the full path, but agents following AGENTS.md call `%s` by name.' % (NAME, NAME))
+        out('      fix: ' + _path_fix())
     return rc
 
 
@@ -334,8 +346,7 @@ def doctor(out=print):
     if exe:
         rep('ok', 'on PATH: %s' % exe)
     else:
-        rep('FAIL', '`%s` is not on PATH, so agents and hooks cannot call it' % NAME,
-            'pip install . (or pipx install .), or add the bin/ directory of this checkout to PATH')
+        rep('FAIL', '`%s` is not on PATH, so agents cannot call it by name' % NAME, _path_fix())
     # state dir
     try:
         state = core.state_dir()
